@@ -109,11 +109,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bfbee59d9bbcb848af61a8eea041be6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  used: 0
+  alive: 1
   neighbours: []
   data: {fileID: 11400000, guid: 2a1b6d94090d4504e8decfb61157120e, type: 2}
   textName: {fileID: 114296054821551112}
   hexelRenderer: {fileID: 212249062393575512}
+  childHexel: {fileID: 1655330744374262}
   emptyHexelSprite: {fileID: 21300000, guid: 4e0ade1b0303d4c4fb50ac08e226ccfa, type: 3}
   filledHexelSprite: {fileID: 21300000, guid: 1ec6684c427a8774085e09d5c0cf02d2, type: 3}
 --- !u!114 &114296054821551112
@@ -128,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7372549, g: 0.79215693, b: 0.79215693, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -148,7 +149,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: HEXEL
+  m_Text: UNKNO
 --- !u!114 &114482030521829430
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -199,7 +200,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 4e0ade1b0303d4c4fb50ac08e226ccfa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1ec6684c427a8774085e09d5c0cf02d2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
