@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,8 +23,8 @@ public class Hexel : MonoBehaviour
     public Sprite emptyHexelSprite;
     public Sprite filledHexelSprite;
 
-    private Color deadTextColor;
-    private Color aliveTextColor;
+    private Color emptyTextColor;
+    private Color filledTextColor;
 
     void Awake()
     {
@@ -32,12 +33,66 @@ public class Hexel : MonoBehaviour
 
     void Start()
     {
-        textName.text = data.type.ToString();
+        //textName.text = data.type.ToString();
 
-        deadTextColor = Color.white;
-        aliveTextColor = Camera.main.backgroundColor;
+        emptyTextColor = Color.white;
+        filledTextColor = Camera.main.backgroundColor;
 
         SetFill(false);
+
+        for (int id = 0; id < neighbours.Length; id++)
+        {
+            if (neighbours[id]) continue;
+
+            Vector3 checkPos = transform.position + HexelHelper.GetOffsetPosition(id);
+
+            Collider[] objs = Physics.OverlapSphere(checkPos, 0.25f);
+            for (int o = 0; o < objs.Length; o++)
+            {
+                if (objs[o].CompareTag("Hexel"))
+                {
+                    neighbours[id] = objs[o].GetComponent<Hexel>();
+                    if (!neighbours[id].neighbours[InverseIndex(id)]) neighbours[id].neighbours[InverseIndex(id)] = this;
+                }
+            }
+        }
+    }
+
+    IEnumerator TickNeighbours()
+    {
+        while(filled)
+        {
+            foreach(Hexel h in neighbours)
+            {
+                h.CheckNeighbours();
+
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+    }
+
+    public void CheckNeighbours()
+    {
+        int liveNeighbours = 0;
+        int fullNeighbours = 0;
+
+        for(int i = 0;i < neighbours.Length; i++)
+        {
+            if (neighbours[i]) liveNeighbours++;
+            if (neighbours[i] && neighbours[i].filled) fullNeighbours++;
+        }
+
+        if (liveNeighbours < 2)
+            Die();
+        else if (liveNeighbours > 4)
+            Die();
+        else
+            SetFill(true);
+    }
+
+    private void Die()
+    {
+        // Do it
     }
 
     public void Activate()
@@ -47,23 +102,19 @@ public class Hexel : MonoBehaviour
         SpawnMissingNeighbours();
     }
 
-    void Update()
-    {
-        // https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
-    }
-
     public void SetFill(bool s)
     {
         filled = s;
 
-        textName.color = filled ? aliveTextColor : deadTextColor;
+        textName.color = filled ? filledTextColor : emptyTextColor;
 
         if (filled) hexelRenderer.sprite = filledHexelSprite;
         else hexelRenderer.sprite = emptyHexelSprite;
 
-        if(s) { 
+        if(filled) {
             SpawnMissingNeighbours();
             particlesFill.Play();
+            StartCoroutine(TickNeighbours());
         }
     }
 
@@ -82,39 +133,37 @@ public class Hexel : MonoBehaviour
         }
     }
 
-
-
     public void SpawnNeighbour(int i)
     {
         float x = 0.0f;
         float y = 0.0f;
 
-        switch(i)
+        switch (i)
         {
             case 0:
                 x = Mathf.Cos(HexelHelper.a0);
                 y = Mathf.Sin(HexelHelper.a0);
-            break;
+                break;
             case 1:
                 x = Mathf.Cos(HexelHelper.a1);
                 y = Mathf.Sin(HexelHelper.a1);
-            break;
+                break;
             case 2:
                 x = Mathf.Cos(HexelHelper.a2);
                 y = Mathf.Sin(HexelHelper.a2);
-            break;
+                break;
             case 3:
                 x = Mathf.Cos(HexelHelper.a3);
                 y = Mathf.Sin(HexelHelper.a3);
-            break;
+                break;
             case 4:
                 x = Mathf.Cos(HexelHelper.a4);
                 y = Mathf.Sin(HexelHelper.a4);
-            break;
+                break;
             case 5:
                 x = Mathf.Cos(HexelHelper.a5);
                 y = Mathf.Sin(HexelHelper.a5);
-            break;
+                break;
         }
 
         Vector3 pos = transform.position + (new Vector3(x, y, 0) * HexelHelper.DIST_BETWEEN);
@@ -155,6 +204,14 @@ public class Hexel : MonoBehaviour
 
         return r;
     }
+
+    public void OnDrawGizmosSelected()
+    {
+        for (int i = 0; i < neighbours.Length; i++) {
+            if (!neighbours[i]) continue;
+            Gizmos.DrawLine(transform.position, neighbours[i].transform.position);
+        }
+    }
 }
 
 public static class HexelHelper
@@ -167,4 +224,40 @@ public static class HexelHelper
     public static readonly float a3 = Mathf.PI;                // Left
     public static readonly float a4 = Mathf.Deg2Rad * 240;     // Top Left
     public static readonly float a5 = Mathf.Deg2Rad * 300;     // Top Right
+
+    public static Vector3 GetOffsetPosition( int i)
+    {
+        float x = 0.0f;
+        float y = 0.0f;
+
+        switch (i)
+        {
+            case 0:
+                x = Mathf.Cos(HexelHelper.a0);
+                y = Mathf.Sin(HexelHelper.a0);
+                break;
+            case 1:
+                x = Mathf.Cos(HexelHelper.a1);
+                y = Mathf.Sin(HexelHelper.a1);
+                break;
+            case 2:
+                x = Mathf.Cos(HexelHelper.a2);
+                y = Mathf.Sin(HexelHelper.a2);
+                break;
+            case 3:
+                x = Mathf.Cos(HexelHelper.a3);
+                y = Mathf.Sin(HexelHelper.a3);
+                break;
+            case 4:
+                x = Mathf.Cos(HexelHelper.a4);
+                y = Mathf.Sin(HexelHelper.a4);
+                break;
+            case 5:
+                x = Mathf.Cos(HexelHelper.a5);
+                y = Mathf.Sin(HexelHelper.a5);
+                break;
+        }
+
+        return new Vector3(x, y, 0) * HexelHelper.DIST_BETWEEN;
+    }
 }
