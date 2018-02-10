@@ -6,7 +6,7 @@ public class Hexullar : MonoBehaviour
 {
     public bool evaluating;
 
-    public Hexel[] hexels;
+    public List<Hexel> hexels;
 
 	// Use this for initialization
 	void Start ()

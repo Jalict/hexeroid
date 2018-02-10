@@ -2,15 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoundsMovement : MonoBehaviour {
+public class BoundsMovement : MonoBehaviour
+{
+    public float dist;
+    public float speed;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    private Vector3 m = Vector3.zero;  // Mouse
+    private Vector3 s = Vector3.zero;  // Screen 
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+	void Update ()
+    {
+        m = Input.mousePosition;
+        s.x = Screen.width / 2;
+        s.y = Screen.height / 2;
+
+        Vector3 pos = transform.position;       // Current camera position
+        Vector3 vec = Vector3.zero;             // Movement vector     
+            
+        if(m.x < dist || m.x > Screen.width - dist || m.y < dist || m.y > Screen.height - dist)
+        {
+            vec = Vector3.Normalize(new Vector3(m.x - s.x, m.y - s.y, m.z - s.z)) * speed * Time.deltaTime;
+        } 
+
+        transform.position = pos + vec;
+    }
 }
