@@ -34,7 +34,7 @@ public class Snapping : MonoBehaviour {
                     if (objs[i].CompareTag("Hexel"))
                     {
                         Hexel h = objs[i].GetComponent<Hexel>();
-                        if (h.mutate) continue;
+                        if (h.mutate || h.filled) continue;
                         h.SetFill(true);
 
                         break;

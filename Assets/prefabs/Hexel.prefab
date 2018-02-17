@@ -163,6 +163,21 @@ MonoBehaviour:
   childHexel: {fileID: 1655330744374262}
   emptyHexelSprite: {fileID: 21300000, guid: 4e0ade1b0303d4c4fb50ac08e226ccfa, type: 3}
   filledHexelSprite: {fileID: 21300000, guid: 1ec6684c427a8774085e09d5c0cf02d2, type: 3}
+  clickSound:
+  - {fileID: 8300000, guid: 7fae080490e7d38418654f994eb5bf3f, type: 3}
+  - {fileID: 8300000, guid: 8419b4b9627e43a4cbf0eced7d7821df, type: 3}
+  - {fileID: 8300000, guid: dc4754c1ed81f0b42959f463b6234361, type: 3}
+  - {fileID: 8300000, guid: d49350736b8adab4f9347a8074cde623, type: 3}
+  - {fileID: 8300000, guid: 89f066910c46862439d00b75bb839018, type: 3}
+  - {fileID: 8300000, guid: 276f2ffd96d69624999ca765569598b1, type: 3}
+  followupSound:
+  - {fileID: 8300000, guid: bac45bbca7ffdde42a8e5eb519c26b8f, type: 3}
+  - {fileID: 8300000, guid: 47d5391c0d6bd2b41b1da848dd6da8cb, type: 3}
+  - {fileID: 8300000, guid: 4bb559d1f7e53764cbffe79e8fa7a271, type: 3}
+  - {fileID: 8300000, guid: 32dc8b0d307726c47b5ec9a73cbc583d, type: 3}
+  - {fileID: 8300000, guid: 75e1b1cebc604d6419c365e6397a8abe, type: 3}
+  - {fileID: 8300000, guid: 80b3de85ca9ce6045a031936dabd2f58, type: 3}
+  mutate: 0
 --- !u!114 &114296054821551112
 MonoBehaviour:
   m_ObjectHideFlags: 1

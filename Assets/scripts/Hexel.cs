@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class Hexel : MonoBehaviour
 {
     [Header("State")]
-    public bool activated = false;
     public bool filled = true;
     public Hexel[] neighbours; 
 
@@ -22,6 +21,7 @@ public class Hexel : MonoBehaviour
     public GameObject childHexel;
     public Sprite emptyHexelSprite;
     public Sprite filledHexelSprite;
+    public AudioClip[] clickSound, followupSound;
 
     private Color emptyTextColor;
     private Color filledTextColor;
@@ -61,6 +61,8 @@ public class Hexel : MonoBehaviour
         }
 
         Score.instance.cells++;
+
+        AudioSource.PlayClipAtPoint(followupSound[UnityEngine.Random.Range(0, followupSound.Length)], Camera.main.transform.position);
     }
 
     public void Update()
@@ -129,13 +131,6 @@ public class Hexel : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void Activate()
-    {
-        activated = true;
-
-        SpawnMissingNeighbours();
-    }
-
     private bool doubleCheck = false;
     public void SetFill(bool s)
     {
@@ -143,13 +138,15 @@ public class Hexel : MonoBehaviour
 
         textName.color = filled ? filledTextColor : emptyTextColor;
 
+        AudioSource.PlayClipAtPoint(clickSound[UnityEngine.Random.Range(0, clickSound.Length)], Camera.main.transform.position);
+
         if (filled) hexelRenderer.sprite = filledHexelSprite;
         else hexelRenderer.sprite = emptyHexelSprite;
 
         if(filled && !doubleCheck) {
             Score.instance.score++;
 
-            SpawnMissingNeighbours();
+            StartCoroutine(SpawnMissingNeighbours());
             particlesFill.Play();
             StartCoroutine(TickNeighbours());
 
@@ -179,9 +176,9 @@ public class Hexel : MonoBehaviour
             {
                 if (neighbours[i])
                 {
-                    if (neighbours[i] && !filled)
+                    if (neighbours[i] && !filled)   // Also mutate
                         neighbours[i].Die();
-                    if (neighbours[i] && filled)
+                    if (neighbours[i] && filled)    // If filled, spawn neighbours again and mutate them
                         neighbours[i].Mutate();
                 }
 
@@ -190,10 +187,12 @@ public class Hexel : MonoBehaviour
         }
     }
 
-    public void SpawnMissingNeighbours()
+    IEnumerator SpawnMissingNeighbours()
     {
         for (int i = 0; i < neighbours.Length; i++)
-        {
+        { 
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.4f));
+
             if (neighbours[i]) continue;
 
             SpawnNeighbour(i);
