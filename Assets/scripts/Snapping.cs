@@ -34,6 +34,7 @@ public class Snapping : MonoBehaviour {
                     if (objs[i].CompareTag("Hexel"))
                     {
                         Hexel h = objs[i].GetComponent<Hexel>();
+                        if (h.mutate) continue;
                         h.SetFill(true);
 
                         break;
@@ -43,7 +44,7 @@ public class Snapping : MonoBehaviour {
         }
 
         if(Input.mouseScrollDelta != Vector2.zero)
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.mouseScrollDelta.y * Time.deltaTime * 100, 5, 50);
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Input.mouseScrollDelta.y * Time.deltaTime * 100, 5, 50);
 
         if (Input.GetKey(KeyCode.Mouse0))
         {

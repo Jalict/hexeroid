@@ -9,10 +9,14 @@ public class BoundsMovement : MonoBehaviour
 
     private Vector3 m = Vector3.zero;  // Mouse
     private Vector3 s = Vector3.zero;  // Screen 
-	
+
 	// Update is called once per frame
 	void Update ()
     {
+        Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
+        if (!screenRect.Contains(Input.mousePosition))
+            return;
+
         m = Input.mousePosition;
         s.x = Screen.width / 2;
         s.y = Screen.height / 2;

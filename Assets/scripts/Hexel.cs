@@ -26,6 +26,8 @@ public class Hexel : MonoBehaviour
     private Color emptyTextColor;
     private Color filledTextColor;
 
+    private Color mutateSpriteColor;
+
     void Awake()
     {
         neighbours = new Hexel[6];
@@ -37,6 +39,7 @@ public class Hexel : MonoBehaviour
 
         emptyTextColor = Color.white;
         filledTextColor = Camera.main.backgroundColor;
+        mutateSpriteColor = Color.red;
 
         SetFill(false);
 
@@ -56,20 +59,34 @@ public class Hexel : MonoBehaviour
                 }
             }
         }
+
+        Score.instance.cells++;
+    }
+
+    public void Update()
+    {
+        // Check for dead children
+        for(int i = 0; i < neighbours.Length;i++)
+        {
+            if (neighbours[i] && !neighbours[i].gameObject) neighbours[i] = null;
+        }
     }
 
     IEnumerator TickNeighbours()
     {
         while(filled)
         {
-            foreach(Hexel h in neighbours)
+            for(int i = 0; i < neighbours.Length;i++)
             {
-                h.CheckNeighbours();
+                if (neighbours[i])
+                    neighbours[i].CheckNeighbours();
 
                 yield return new WaitForSeconds(0.2f);
             }
         }
     }
+
+    public bool mutate;
 
     public void CheckNeighbours()
     {
@@ -82,17 +99,34 @@ public class Hexel : MonoBehaviour
             if (neighbours[i] && neighbours[i].filled) fullNeighbours++;
         }
 
-        if (liveNeighbours < 2)
+        if (fullNeighbours >= 5)
+        {
+            Mutate();
+            return;
+        }
+
+        if (liveNeighbours < 2 || liveNeighbours > 4) { 
             Die();
-        else if (liveNeighbours > 4)
-            Die();
-        else
+            return;
+        }
+
+
+        if (fullNeighbours > 2 && fullNeighbours < 5) { 
             SetFill(true);
+            return;
+        }
+
     }
 
     private void Die()
     {
-        // Do it
+        if (filled) { 
+            Score.instance.score--;
+        }
+
+        Score.instance.cells--;
+
+        Destroy(gameObject);
     }
 
     public void Activate()
@@ -102,6 +136,7 @@ public class Hexel : MonoBehaviour
         SpawnMissingNeighbours();
     }
 
+    private bool doubleCheck = false;
     public void SetFill(bool s)
     {
         filled = s;
@@ -111,16 +146,48 @@ public class Hexel : MonoBehaviour
         if (filled) hexelRenderer.sprite = filledHexelSprite;
         else hexelRenderer.sprite = emptyHexelSprite;
 
-        if(filled) {
+        if(filled && !doubleCheck) {
+            Score.instance.score++;
+
             SpawnMissingNeighbours();
             particlesFill.Play();
             StartCoroutine(TickNeighbours());
+
+            doubleCheck = true;
         }
     }
 
+
+    public Coroutine mutateCheck;
     public void Mutate()
     {
+        hexelRenderer.color = mutateSpriteColor;
 
+        mutate = true;
+
+        if (filled) Score.instance.score--;
+        Score.instance.cells--;
+
+        mutateCheck = StartCoroutine(MuateTick());
+    }
+
+    IEnumerator MuateTick()
+    {
+        while(mutate)
+        {
+            for (int i = 0; i < neighbours.Length; i++)
+            {
+                if (neighbours[i])
+                {
+                    if (neighbours[i] && !filled)
+                        neighbours[i].Die();
+                    if (neighbours[i] && filled)
+                        neighbours[i].Mutate();
+                }
+
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
     }
 
     public void SpawnMissingNeighbours()
